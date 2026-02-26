@@ -21,7 +21,7 @@ spec:
       containers:
       - name: todo-app
         # This will be updated by CI pipeline
-        image: 175076060567.dkr.ecr.eu-west-2.amazonaws.com/production/todoapp:latest
+        image: 175076060567.dkr.ecr.eu-west-2.amazonaws.com/production/todoapp:0d923d44db274a4e45b702db384ce0f78d18f57f
         ports:
         - containerPort: 5000
           name: http
