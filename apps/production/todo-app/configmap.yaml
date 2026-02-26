@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-app-config
+  namespace: production
+data:
+  LOG_LEVEL: "INFO"
+  DATABASE_NAME: "todo"
+  FLASK_ENV: "production"
+  API_TIMEOUT: "30"
+  MAX_CONNECTIONS: "10"

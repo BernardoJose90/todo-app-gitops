@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+  namespace: production
+  labels:
+    app: todo-app
+    environment: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+        environment: production
+    spec:
+      serviceAccountName: todo-app-sa
+      containers:
+      - name: todo-app
+        # This will be updated by CI pipeline
+        image: 175076060567.dkr.ecr.eu-west-2.amazonaws.com/production/todoapp:latest
+        ports:
+        - containerPort: 5000
+          name: http
+        env:
+        - name: ENV
+          value: "production"
+        - name: AWS_REGION
+          value: "eu-west-2"
+        - name: FLASK_APP
+          value: "main.py"
+        - name: FLASK_RUN_HOST
+          value: "0.0.0.0"
+        - name: AWS_STS_REGIONAL_ENDPOINTS
+          value: "regional"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: todo-app-secrets
+              key: database-url
+        envFrom:
+        - configMapRef:
+            name: todo-app-config
+        volumeMounts:
+        - name: aws-iam-token
+          mountPath: /var/run/secrets/eks.amazonaws.com/serviceaccount
+          readOnly: true
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: aws-iam-token
+        projected:
+          sources:
+          - serviceAccountToken:
+              audience: sts.amazonaws.com
+              expirationSeconds: 86400
+              path: token

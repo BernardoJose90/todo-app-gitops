@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: production
+
+resources:
+  - deployment.yaml
+  - service.yaml
+  - ServiceAccount.yaml
+  - configmap.yaml
+
+commonLabels:
+  app: todo-app
+  environment: production
+  managed-by: argocd
+
+images:
+  - name: 175076060567.dkr.ecr.eu-west-2.amazonaws.com/production/todoapp
+    newTag: latest
+
+configMapGenerator:
+  - name: todo-app-config
+    behavior: merge
+    literals:
+      - DEPLOYMENT_TIME="2026-02-26 18:00:00"
