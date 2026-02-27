@@ -8,17 +8,24 @@ resources:
   - ServiceAccount.yaml
   - configmap.yaml
 
-commonLabels:
-  app: todo-app
-  environment: production
-  managed-by: argocd
+# Use 'labels' instead of deprecated 'commonLabels'
+labels:
+  - pairs:
+      app: todo-app
+      environment: production
+      managed-by: argocd
 
+# Fix the configMapGenerator - remove the merge behavior
+configMapGenerator:
+  - name: todo-app-config
+    behavior: create  # Changed from 'merge' to 'create'
+    literals:
+      - LOG_LEVEL=INFO
+      - DATABASE_NAME=todo
+      - FLASK_ENV=production
+
+# Keep the image reference
 images:
   - name: 175076060567.dkr.ecr.eu-west-2.amazonaws.com/production/todoapp
     newTag: latest
-
-configMapGenerator:
-  - name: todo-app-config
-    behavior: merge
-    literals:
-      - DEPLOYMENT_TIME="2026-02-26 18:00:00"
+    
