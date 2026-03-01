@@ -28,3 +28,4 @@ configMapGenerator:
 images:
   - name: 175076060567.dkr.ecr.eu-west-2.amazonaws.com/production/todoapp
     newTag: latest
+    
