@@ -18,6 +18,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: todo-app
+                name: todo-app-service
                 port:
                   number: 80
